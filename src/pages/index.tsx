@@ -27,7 +27,6 @@ export default function Home() {
         console.error(error.message);
     }
 
-
     return (
         <>
             <Head>
@@ -41,7 +40,6 @@ export default function Home() {
                 {/* Print list of all users if fetched from db */}
                 {data?.users.map((user) => (
                     <p key={user._id}>{user.username}</p>
-
                 ))}
             </main>
         </>
