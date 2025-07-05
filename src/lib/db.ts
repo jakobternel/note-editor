@@ -9,12 +9,6 @@ declare global {
     };
 }
 
-// Get MongoDB connection URI from .env file
-const MONGO_URI = process.env.MONGO_URI!;
-
-// Throw error if no connection URI set
-if (!MONGO_URI) throw new Error("Please define the MONGO_URI in .env");
-
 // Use existing cached connection if available, otherwise initialize cache
 const cached =
     global.mongoose || (global.mongoose = { conn: null, promise: null });
@@ -24,6 +18,12 @@ const cached =
  * Reuses existing connection in development to avoid multiple connections during hot reloads.
  */
 async function dbConnect() {
+    // Get MongoDB connection URI from .env file
+    const MONGO_URI = process.env.MONGO_URI!;
+
+    // Throw error if no connection URI set
+    if (!MONGO_URI) throw new Error("Please define the MONGO_URI in .env");
+
     // If a connection already exists, return it
     if (cached.conn) {
         console.log("Using existing MongoDB connection");
