@@ -80,6 +80,7 @@
     --color-input-text: #1f1331;
     --color-input-placeholder: #9ca3af;
     --color-input-focus: #a755c2;
+    --color-input-glow: rgba(167, 85, 194, 0.2);
 
     /* Button theme */
     --color-button-bg: #a755c2;
@@ -103,6 +104,7 @@
     --color-input-text: #f4f1fa;
     --color-input-placeholder: #8377a2;
     --color-input-focus: #d6a4e8;
+    --color-input-glow: rgba(214, 164, 232, 0.2);
 
     /* Button theme */
     --color-button-bg: #c48be4;

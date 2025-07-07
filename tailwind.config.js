@@ -37,7 +37,7 @@ module.exports = {
                 1: "1px",
             },
             boxShadow: {
-                formXS: "0 1px 2px 0 var(--color-input-focus)",
+                formXS: "0 1px 2px 0 var(--color-input-glow)",
             },
         },
     },
