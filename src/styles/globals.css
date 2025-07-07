@@ -2,3 +2,64 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    /* Set text colour to primary */
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    div,
+    span {
+        @apply text-textPrimary;
+    }
+
+    /* Apply background to all pages */
+    html,
+    body {
+        @apply m-0 h-full w-full bg-background p-0 transition-all;
+    }
+
+    /* Specify heading tags to use Sora font */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-heading;
+    }
+
+    /* Specify text tags to use Inter font */
+    p,
+    a,
+    div,
+    span {
+        @apply font-main;
+    }
+}
+
+/* Light theme colours */
+:root {
+    --color-primary: #a755c2;
+    --color-background: #fafaff;
+    --color-surface: #ffffff;
+    --color-accent: #f3e8fb;
+    --color-text-primary: #1f1331;
+    --color-text-secondary: #6b7280;
+    --color-border: #e5e7eb;
+}
+
+/* Dark theme colours */
+[data-theme="dark"] {
+    --color-primary: #d6a4e8;
+    --color-background: #140d1c;
+    --color-surface: #1f1530;
+    --color-accent: #3b1c4d;
+    --color-text-primary: #f4f1fa;
+    --color-text-secondary: #bdafd4;
+    --color-border: #3a324a;
+}
