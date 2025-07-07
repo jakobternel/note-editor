@@ -2,3 +2,110 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    /* Set text colour to primary */
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    div,
+    span {
+        @apply text-textPrimary;
+    }
+
+    /* Apply background to all pages */
+    html,
+    body {
+        @apply m-0 h-full w-full bg-background p-0 transition-all;
+    }
+
+    /* Specify heading tags to use Sora font */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-heading;
+    }
+
+    /* Specify text tags to use Inter font */
+    p,
+    a,
+    div,
+    span {
+        @apply font-main;
+    }
+}
+
+/* Input fields */
+.input {
+    @apply w-full rounded-md border border-formInputBorder bg-formInputBackground px-4 py-2 text-sm text-formInputText outline-none;
+}
+
+.input::placeholder {
+    @apply text-formInputPlaceholder;
+}
+
+.input:focus {
+    @apply border-formInputFocus shadow-formXS;
+}
+
+/* Buttons */
+.button {
+    @apply rounded-md bg-buttonBackground px-4 py-2 text-sm text-buttonText outline-none;
+}
+
+.button:hover {
+    @apply bg-buttonHover transition-all;
+}
+
+/* Light theme colours */
+:root {
+    --color-primary: #a755c2;
+    --color-background: #fafaff;
+    --color-surface: #ffffff;
+    --color-accent: #f3e8fb;
+    --color-text-primary: #1f1331;
+    --color-text-secondary: #6b7280;
+    --color-border: #e5e7eb;
+
+    /* Form input theme */
+    --color-input-bg: #f5f3fa;
+    --color-input-border: #ccc;
+    --color-input-text: #1f1331;
+    --color-input-placeholder: #9ca3af;
+    --color-input-focus: #a755c2;
+
+    /* Button theme */
+    --color-button-bg: #a755c2;
+    --color-button-hover: #933db7;
+    --color-button-text: #ffffff;
+}
+
+/* Dark theme colours */
+[data-theme="dark"] {
+    --color-primary: #d6a4e8;
+    --color-background: #140d1c;
+    --color-surface: #1f1530;
+    --color-accent: #3b1c4d;
+    --color-text-primary: #f4f1fa;
+    --color-text-secondary: #bdafd4;
+    --color-border: #3a324a;
+
+    /* Form input theme */
+    --color-input-bg: #2a1b3c;
+    --color-input-border: #3a324a;
+    --color-input-text: #f4f1fa;
+    --color-input-placeholder: #8377a2;
+    --color-input-focus: #d6a4e8;
+
+    /* Button theme */
+    --color-button-bg: #c48be4;
+    --color-button-hover: #d6a4e8;
+    --color-button-text: #140d1c;
+}
