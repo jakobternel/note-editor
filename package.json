@@ -13,10 +13,12 @@
         "test": "vitest --run --reporter verbose"
     },
     "lint-staged": {
+        "*.{test.ts,test.tsx}": [
+            "vitest --run --reporter verbose --passWithNoTests --"
+        ],
         "*.{js,jsx,ts,tsx}": [
             "eslint --fix",
-            "prettier --write",
-            "vitest --run --reporter verbose"
+            "prettier --write"
         ],
         "*.{css,scss,json,md}": [
             "prettier --write"
