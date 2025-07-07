@@ -3,13 +3,13 @@ import { useRouter } from "next/router";
 
 import { EnvelopeSimpleIcon, LockKeyIcon } from "@phosphor-icons/react";
 
-export default function LoginPage() {
+export default function RegisterPage() {
     const router = useRouter();
 
     return (
         <>
             <Head>
-                <title>Login - Notilo</title>
+                <title>Register - Notilo</title>
                 <link rel="icon" href="/icon_white.png" />
             </Head>
             <main>
@@ -18,16 +18,11 @@ export default function LoginPage() {
                         {/* Welcome section */}
                         <div className="flex flex-col items-center gap-3">
                             <h1 className="text-2xl font-semibold">
-                                Welcome Back
+                                Unlock Your Productivity
                             </h1>
-                            <p className="text-sm text-textSecondary">
-                                New to Notilo?{" "}
-                                <span
-                                    className="cursor-pointer font-semibold text-primary"
-                                    onClick={() => router.push("/register")}
-                                >
-                                    Register
-                                </span>
+                            <p className="text-center text-sm text-textSecondary">
+                                Join today and start organizing your notes in
+                                one place.
                             </p>
                         </div>
                         {/* Login form */}
@@ -59,9 +54,18 @@ export default function LoginPage() {
                                 />
                             </span>
                             <button type="submit" className="button">
-                                Login
+                                Register
                             </button>
                         </form>
+                        <p className="text-sm text-textSecondary">
+                            Already have an account?{" "}
+                            <span
+                                className="cursor-pointer font-semibold text-primary"
+                                onClick={() => router.push("/login")}
+                            >
+                                Login
+                            </span>
+                        </p>
                     </div>
                 </div>
             </main>
