@@ -2,8 +2,8 @@ import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import mongoose from "mongoose";
 import { ApolloServer } from "apollo-server-micro";
 
-import { typeDefs } from "@/graphql/schema";
-import { resolvers } from "@/graphql/resolvers";
+import { mergedTypeDefs } from "@/graphql/schema";
+import { resolvers } from "@/graphql/resolvers/resolvers";
 import User from "@/models/User";
 import { MongoMemoryServer } from "mongodb-memory-server";
 
@@ -18,7 +18,7 @@ beforeAll(async () => {
 
     // Create Apollo Server for testing
     server = new ApolloServer({
-        typeDefs,
+        typeDefs: mergedTypeDefs,
         resolvers,
     });
     await server.start();
@@ -39,9 +39,10 @@ afterEach(async () => {
 describe("GraphQL User Resolvers", () => {
     it("creates a user", async () => {
         const CREATE_USER = `
-            mutation CreateUser($username: String!, $password: String!) {
-                createUser(username: $username, password: $password) {
+            mutation CreateUser($email: String!, $username: String!, $password: String!) {
+                createUser(email: $email, username: $username, password: $password) {
                     _id
+                    email
                     username
                     password
                 }
@@ -50,7 +51,11 @@ describe("GraphQL User Resolvers", () => {
 
         const res = await server.executeOperation({
             query: CREATE_USER,
-            variables: { username: "testuser", password: "testpass" },
+            variables: {
+                email: "test@test.com",
+                username: "testuser",
+                password: "testpass",
+            },
         });
 
         expect(res.errors).toBeUndefined();
@@ -59,12 +64,17 @@ describe("GraphQL User Resolvers", () => {
 
     it("fetches all users", async () => {
         // Pre-insert user directly via model for testing fetch
-        await User.create({ username: "user1", password: "pass1" });
+        await User.create({
+            email: "user1@test.com",
+            username: "user1",
+            password: "pass1",
+        });
 
         const GET_USERS = `
             query {
                 users {
                     _id
+                    email
                     username
                     password
                 }
@@ -80,14 +90,16 @@ describe("GraphQL User Resolvers", () => {
 
     it("fetches a user by id", async () => {
         const user = await User.create({
+            email: "user2@test.com",
             username: "user2",
             password: "pass2",
         });
 
         const GET_USER = `
             query GetUser($id: ID!) {
-                user(id: $id) {
+                userById(id: $id) {
                     _id
+                    email
                     username
                     password
                 }
@@ -100,6 +112,35 @@ describe("GraphQL User Resolvers", () => {
         });
 
         expect(res.errors).toBeUndefined();
-        expect(res.data?.user.username).toBe("user2");
+        expect(res.data?.userById.username).toBe("user2");
+        expect(res.data?.userById.email).toBe("user2@test.com");
+    });
+
+    it("fetches a user by email", async () => {
+        await User.create({
+            email: "user3@test.com",
+            username: "user3",
+            password: "pass3",
+        });
+
+        const GET_USER = `
+            query GetUser($email: String!) {
+                userByEmail(email: $email) {
+                    _id
+                    email
+                    username
+                    password
+                }
+            }
+        `;
+
+        const res = await server.executeOperation({
+            query: GET_USER,
+            variables: { email: "user3@test.com" },
+        });
+
+        expect(res.errors).toBeUndefined();
+        expect(res.data?.userByEmail.username).toBe("user3");
+        expect(res.data?.userByEmail.email).toBe("user3@test.com");
     });
 });
