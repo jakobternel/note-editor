@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { ApolloError, gql, useLazyQuery } from "@apollo/client";
+import { ApolloError, gql, useLazyQuery, useMutation } from "@apollo/client";
 
 import {
     EnvelopeSimpleIcon,
@@ -16,16 +16,27 @@ const GET_USER_BY_EMAIL = gql`
             _id
             email
             username
-            password
+        }
+    }
+`;
+
+// GQL query to log user in
+const LOGIN_USER = gql`
+    mutation LoginUser($email: String!, $password: String!) {
+        loginUser(email: $email, password: $password) {
+            _id
+            email
+            username
         }
     }
 `;
 
 export default function LoginPage() {
-    const [loginError, setLoginError] = useState<string>("Test"); // Displays error to show user if login attempt fails
+    const [loginError, setLoginError] = useState<string>(""); // Displays error to show user if login attempt fails
     const [submissionLoading, setSubmissionLoading] = useState<boolean>(false); // Loading state to disable button and show loading effect
     const router = useRouter();
     const [getUser] = useLazyQuery(GET_USER_BY_EMAIL);
+    const [loginUser] = useMutation(LOGIN_USER);
 
     // Logic for handling login form submission
     const handleSubmit = async (e: React.FormEvent) => {
@@ -50,11 +61,19 @@ export default function LoginPage() {
             const user = response.data?.userByEmail;
 
             // Check to see if user with email exists and if passwords match
-            if (!user || user.password !== password) {
+            if (!user) {
                 setLoginError("Invalid email or password");
                 setSubmissionLoading(false);
                 return;
             }
+
+            // Attempt login
+            await loginUser({
+                variables: {
+                    email,
+                    password,
+                },
+            });
 
             // Redirect user on login
             router.push("/");

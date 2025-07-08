@@ -1,4 +1,5 @@
 import User from "@/models/User";
+import bcrypt from "bcrypt";
 
 export const resolvers = {
     Query: {
@@ -48,6 +49,29 @@ export const resolvers = {
             // Add new user and return details
             const user = new User({ email, username, password });
             await user.save();
+            return user;
+        },
+
+        // Handle login of user
+        loginUser: async (
+            _: unknown,
+            { email, password }: { email: string; password: string }
+        ) => {
+            const user = await User.findOne({ email });
+
+            // Throw error if no user found with username
+            if (!user) {
+                throw new Error("Invalid email or password");
+            }
+
+            // Check if password input matches hashed password
+            const passwordMatch = await bcrypt.compare(password, user.password);
+
+            if (!passwordMatch) {
+                throw new Error("Invalid email or password");
+            }
+
+            // Return user details
             return user;
         },
     },

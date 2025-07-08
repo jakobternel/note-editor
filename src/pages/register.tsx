@@ -24,7 +24,7 @@ const ADD_USER = gql`
 `;
 
 export default function RegisterPage() {
-    const [registerError, setRegisterError] = useState<string>("Test"); // Displays error to show user if registration attempt fails
+    const [registerError, setRegisterError] = useState<string>(""); // Displays error to show user if registration attempt fails
     const [submissionLoading, setSubmissionLoading] = useState<boolean>(false); // Loading state to disable button and show loading effect
     const router = useRouter();
     const [addUser] = useMutation(ADD_USER);

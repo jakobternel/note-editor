@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import User from "@/models/User";
 import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import { MongoServerError } from "mongodb";
+import bcrypt from "bcrypt";
 
 describe("User Model Tests", () => {
     beforeAll(async () => {
@@ -30,7 +31,6 @@ describe("User Model Tests", () => {
         expect(response._id).toBeDefined();
         expect(response.email).toBe("test@test.com");
         expect(response.username).toBe("user");
-        expect(response.password).toBe("password");
     });
 
     it("should not save user without required fields", async () => {
@@ -103,6 +103,52 @@ describe("User Model Tests", () => {
 
         expect(err).toBeDefined();
         expect(err?.code).toBe(11000); // Mongo duplicate key error code
+    });
+
+    it("hashes password before saving a user", async () => {
+        const user = new User({
+            email: "test@test.com",
+            username: "username",
+            password: "password",
+        });
+
+        await user.save();
+
+        expect(user.password).not.toBe("password");
+        const isMatch = await bcrypt.compare("password", user.password);
+        expect(isMatch).toBe(true);
+    });
+
+    it("does not rehash password if not modified", async () => {
+        const user = new User({
+            email: "test@test.com",
+            username: "test",
+            password: "password",
+        });
+
+        await user.save();
+        const oldHashedPassword = user.password;
+
+        user.username = "test2";
+        await user.save();
+
+        expect(user.password).toBe(oldHashedPassword);
+    });
+
+    it("correctly compares password hashes", async () => {
+        const user = new User({
+            email: "test@test.com",
+            username: "compareuser",
+            password: "password",
+        });
+
+        await user.save();
+
+        const isValid = await bcrypt.compare("password", user.password);
+        expect(isValid).toBe(true);
+
+        const isInvalid = await bcrypt.compare("wrongpassword", user.password);
+        expect(isInvalid).toBe(false);
     });
 
     it("should find a user by email", async () => {
