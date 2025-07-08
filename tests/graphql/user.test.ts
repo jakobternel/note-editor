@@ -1,11 +1,12 @@
 import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import mongoose from "mongoose";
 import { ApolloServer } from "apollo-server-micro";
+import bcrypt from "bcrypt";
+import { MongoMemoryServer } from "mongodb-memory-server";
 
 import { mergedTypeDefs } from "@/graphql/schema";
 import { resolvers } from "@/graphql/resolvers/resolvers";
 import User from "@/models/User";
-import { MongoMemoryServer } from "mongodb-memory-server";
 
 let server: ApolloServer;
 let mongod: MongoMemoryServer;
@@ -44,7 +45,6 @@ describe("GraphQL User Resolvers", () => {
                     _id
                     email
                     username
-                    password
                 }
             }
         `;
@@ -64,14 +64,14 @@ describe("GraphQL User Resolvers", () => {
 
     it("fails to create user if email is missing", async () => {
         const CREATE_USER = `
-        mutation CreateUser($username: String!, $password: String!) {
-            createUser(username: $username, password: $password) {
-                _id
-                email
-                username
+            mutation CreateUser($username: String!, $password: String!) {
+                createUser(username: $username, password: $password) {
+                    _id
+                    email
+                    username
+                }
             }
-        }
-    `;
+        `;
 
         const response = await server.executeOperation({
             query: CREATE_USER,
@@ -86,14 +86,14 @@ describe("GraphQL User Resolvers", () => {
 
     it("fails to create user if username is missing", async () => {
         const CREATE_USER = `
-        mutation CreateUser($username: String!, $password: String!) {
-            createUser(username: $username, password: $password) {
-                _id
-                email
-                username
+            mutation CreateUser($username: String!, $password: String!) {
+                createUser(username: $username, password: $password) {
+                    _id
+                    email
+                    username
+                }
             }
-        }
-    `;
+        `;
 
         const response = await server.executeOperation({
             query: CREATE_USER,
@@ -108,14 +108,14 @@ describe("GraphQL User Resolvers", () => {
 
     it("fails to create user if password is missing", async () => {
         const CREATE_USER = `
-        mutation CreateUser($username: String!, $password: String!) {
-            createUser(username: $username, password: $password) {
-                _id
-                email
-                username
+            mutation CreateUser($username: String!, $password: String!) {
+                createUser(username: $username, password: $password) {
+                    _id
+                    email
+                    username
+                }
             }
-        }
-    `;
+        `;
 
         const response = await server.executeOperation({
             query: CREATE_USER,
@@ -136,13 +136,13 @@ describe("GraphQL User Resolvers", () => {
         });
 
         const CREATE_USER = `
-        mutation CreateUser($email: String!, $username: String!, $password: String!) {
-            createUser(email: $email, username: $username, password: $password) {
-                _id
-                email
+            mutation CreateUser($email: String!, $username: String!, $password: String!) {
+                createUser(email: $email, username: $username, password: $password) {
+                    _id
+                    email
+                }
             }
-        }
-    `;
+        `;
 
         const response = await server.executeOperation({
             query: CREATE_USER,
@@ -167,13 +167,13 @@ describe("GraphQL User Resolvers", () => {
         });
 
         const CREATE_USER = `
-        mutation CreateUser($email: String!, $username: String!, $password: String!) {
-            createUser(email: $email, username: $username, password: $password) {
-                _id
-                email
+            mutation CreateUser($email: String!, $username: String!, $password: String!) {
+                createUser(email: $email, username: $username, password: $password) {
+                    _id
+                    email
+                }
             }
-        }
-    `;
+        `;
 
         const response = await server.executeOperation({
             query: CREATE_USER,
@@ -190,6 +190,96 @@ describe("GraphQL User Resolvers", () => {
         );
     });
 
+    it("hashes password on createUser", async () => {
+        const CREATE_USER = `
+            mutation CreateUser($email: String!, $username: String!, $password: String!) {
+                createUser(email: $email, username: $username, password: $password) {
+                    _id
+                    email
+                    username
+                }
+            }
+        `;
+
+        const response = await server.executeOperation({
+            query: CREATE_USER,
+            variables: {
+                email: "test@test.com",
+                username: "user",
+                password: "password",
+            },
+        });
+
+        expect(response.errors).toBeUndefined();
+
+        const user = await User.findOne({ email: "test@test.com" });
+        expect(user).not.toBeNull();
+        expect(user!.password).not.toBe("password");
+
+        const isMatch = await bcrypt.compare("password", user!.password);
+        expect(isMatch).toBe(true);
+    });
+
+    it("fails loginUser if password is incorrect", async () => {
+        const user = new User({
+            email: "test@test.com",
+            username: "user",
+            password: "password",
+        });
+        await user.save();
+
+        const LOGIN_USER = `
+            mutation LoginUser($email: String!, $password: String!) {
+                loginUser(email: $email, password: $password) {
+                    _id
+                    email
+                    username
+                }
+            }
+        `;
+
+        const response = await server.executeOperation({
+            query: LOGIN_USER,
+            variables: {
+                email: "loginfail@test.com",
+                password: "wrongpassword",
+            },
+        });
+
+        expect(response.errors).toBeDefined();
+    });
+
+    it("logs in user successfully with correct password", async () => {
+        const user = new User({
+            email: "test@test.com",
+            username: "user",
+            password: "password",
+        });
+        await user.save();
+
+        const LOGIN_USER = `
+            mutation LoginUser($email: String!, $password: String!) {
+                loginUser(email: $email, password: $password) {
+                    _id
+                    email
+                    username
+                }
+            }
+        `;
+
+        const res = await server.executeOperation({
+            query: LOGIN_USER,
+            variables: {
+                email: "test@test.com",
+                password: "password",
+            },
+        });
+
+        expect(res.errors).toBeUndefined();
+        expect(res.data?.loginUser.email).toBe("test@test.com");
+        expect(res.data?.loginUser.username).toBe("user");
+    });
+
     it("fetches all users", async () => {
         // Pre-insert user directly via model for testing fetch
         await User.create({
@@ -204,7 +294,6 @@ describe("GraphQL User Resolvers", () => {
                     _id
                     email
                     username
-                    password
                 }
             }
         `;
@@ -229,7 +318,6 @@ describe("GraphQL User Resolvers", () => {
                     _id
                     email
                     username
-                    password
                 }
             }
         `;
@@ -257,7 +345,6 @@ describe("GraphQL User Resolvers", () => {
                     _id
                     email
                     username
-                    password
                 }
             }
         `;
@@ -285,7 +372,6 @@ describe("GraphQL User Resolvers", () => {
                     _id
                     email
                     username
-                    password
                 }
             }
         `;
