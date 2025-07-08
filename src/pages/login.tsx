@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { gql, useLazyQuery } from "@apollo/client";
+import { ApolloError, gql, useLazyQuery } from "@apollo/client";
 
 import {
     EnvelopeSimpleIcon,
@@ -22,7 +22,7 @@ const GET_USER_BY_EMAIL = gql`
 `;
 
 export default function LoginPage() {
-    const [loginError, setLoginError] = useState<string>(""); // Displays error to show user if login attempt fails
+    const [loginError, setLoginError] = useState<string>("Test"); // Displays error to show user if login attempt fails
     const [submissionLoading, setSubmissionLoading] = useState<boolean>(false); // Loading state to disable button and show loading effect
     const router = useRouter();
     const [getUser] = useLazyQuery(GET_USER_BY_EMAIL);
@@ -31,24 +31,46 @@ export default function LoginPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmissionLoading(true); // Set loading state to disable button
+        setLoginError(""); // Clear login error
 
-        // Get form inputs
-        const form = new FormData(e.currentTarget as HTMLFormElement);
-        const email = form.get("email") as string;
-        const password = form.get("password") as string;
+        try {
+            // Get form inputs
+            const form = new FormData(e.currentTarget as HTMLFormElement);
+            const email = form.get("email") as string;
+            const password = form.get("password") as string;
 
-        const response = await getUser({ variables: { email } }); // Run GQL query
+            // Check email and password are set
+            if (!email || !password) {
+                setLoginError("Email and password are required.");
+                return;
+            }
 
-        const user = response.data?.userByEmail;
+            // Run GQL query
+            const response = await getUser({ variables: { email } });
+            const user = response.data?.userByEmail;
 
-        // Check to see if user with email exists and if passwords match
-        if (!user || user.password !== password) {
-            setLoginError("Invalid email or password");
+            // Check to see if user with email exists and if passwords match
+            if (!user || user.password !== password) {
+                setLoginError("Invalid email or password");
+                setSubmissionLoading(false);
+                return;
+            }
+
+            // Redirect user on login
+            router.push("/");
+        } catch (err: unknown) {
+            // Parse GraphQL error message
+            if (err instanceof ApolloError) {
+                const message =
+                    err.graphQLErrors?.[0]?.message ||
+                    "Something went wrong. Please try again.";
+                setLoginError(message);
+            } else {
+                setLoginError("Unexpected error occurred.");
+            }
+        } finally {
             setSubmissionLoading(false);
-            return;
         }
-
-        router.push("/"); // Redirect user on login
     };
 
     return (
@@ -83,7 +105,7 @@ export default function LoginPage() {
                         >
                             {/* Error notification if login attempt failed */}
                             {loginError && (
-                                <span className="flex flex-row gap-2 border border-red-500 bg-red-500 bg-opacity-25 p-2">
+                                <span className="flex flex-row gap-2 border border-red-500 bg-red-500/25 p-2">
                                     <InfoIcon className="text-red-500" />
                                     <p className="text-xs text-red-500">
                                         {loginError}

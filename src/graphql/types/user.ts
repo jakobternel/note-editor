@@ -12,6 +12,7 @@ export const userTypeDefs = gql`
         users: [User!]!
         userById(id: ID!): User
         userByEmail(email: String!): User
+        userByUsername(username: String!): User
     }
 
     extend type Mutation {
