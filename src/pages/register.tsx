@@ -19,6 +19,7 @@ const ADD_USER = gql`
         createUser(email: $email, username: $username, password: $password) {
             _id
             email
+            username
         }
     }
 `;

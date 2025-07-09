@@ -1,5 +1,22 @@
 import User from "@/models/User";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { NextApiResponse } from "next";
+
+const generateToken = (userId: string, email: string) => {
+    const JWT_SECRET = process.env.JWT_SECRET;
+
+    // Throw error if no JWT declared
+    if (!JWT_SECRET) {
+        console.error("No JWT specified");
+        throw new Error("There was an issue. Please try again.");
+    }
+
+    // Return generated JWT token
+    return jwt.sign({ userId, email }, JWT_SECRET, {
+        expiresIn: "7d",
+    });
+};
 
 export const resolvers = {
     Query: {
@@ -31,31 +48,44 @@ export const resolvers = {
                 email,
                 username,
                 password,
-            }: { email: string; username: string; password: string }
+            }: { email: string; username: string; password: string },
+            context: { res: NextApiResponse }
         ) => {
             // Check if a user already exists with the email or username
             const existingUserByEmail = await User.findOne({ email });
             const existingUserByUsername = await User.findOne({ username });
 
             // Throw error if email already registered with account
-            if (existingUserByEmail) {
-                throw new Error("Email already registered.");
-            }
-
-            if (existingUserByUsername) {
-                throw new Error("Username already registered.");
+            if (existingUserByEmail || existingUserByUsername) {
+                throw new Error("Account already registered.");
             }
 
             // Add new user and return details
             const user = new User({ email, username, password });
             await user.save();
+
+            // Generate JWT token
+            const token = generateToken(user._id, user.email);
+
+            // Set as cookie if not being run from gql test
+            if (!context?.res?.setHeader) {
+                console.warn("No setHeader found in context. Skipping cookies"); // Do not set header if test run from gql tests
+            } else {
+                context.res.setHeader(
+                    "Set-Cookie",
+                    `token=${token}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Strict`
+                );
+            }
+
+            // Return user
             return user;
         },
 
         // Handle login of user
         loginUser: async (
             _: unknown,
-            { email, password }: { email: string; password: string }
+            { email, password }: { email: string; password: string },
+            context: { res: NextApiResponse }
         ) => {
             const user = await User.findOne({ email });
 
@@ -69,6 +99,19 @@ export const resolvers = {
 
             if (!passwordMatch) {
                 throw new Error("Invalid email or password");
+            }
+
+            // Generate JWT token
+            const token = generateToken(user._id, user.email);
+
+            // Set as cookie if not being run from gql test
+            if (!context?.res?.setHeader) {
+                console.warn("No setHeader found in context. Skipping cookies"); // Do not set header if test run from gql tests
+            } else {
+                context.res.setHeader(
+                    "Set-Cookie",
+                    `token=${token}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Strict`
+                );
             }
 
             // Return user details

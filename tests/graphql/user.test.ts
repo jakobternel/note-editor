@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { ApolloServer } from "apollo-server-micro";
 import bcrypt from "bcrypt";
 import { MongoMemoryServer } from "mongodb-memory-server";
+import jwt from "jsonwebtoken";
 
 import { mergedTypeDefs } from "@/graphql/schema";
 import { resolvers } from "@/graphql/resolvers/resolvers";
@@ -21,6 +22,9 @@ beforeAll(async () => {
     server = new ApolloServer({
         typeDefs: mergedTypeDefs,
         resolvers,
+        context: ({ contextValue, ...rest }) => {
+            return contextValue || rest;
+        },
     });
     await server.start();
 });
@@ -155,7 +159,7 @@ describe("GraphQL User Resolvers", () => {
 
         expect(response.errors).toBeDefined();
         expect(response.errors?.[0].message).toMatch(
-            "Email already registered."
+            "Account already registered."
         );
     });
 
@@ -186,7 +190,7 @@ describe("GraphQL User Resolvers", () => {
 
         expect(response.errors).toBeDefined();
         expect(response.errors?.[0].message).toMatch(
-            "Username already registered."
+            "Account already registered."
         );
     });
 
@@ -384,5 +388,112 @@ describe("GraphQL User Resolvers", () => {
         expect(response.errors).toBeUndefined();
         expect(response.data?.userByUsername.username).toBe("user");
         expect(response.data?.userByUsername.email).toBe("test@test.com");
+    });
+
+    it("logs in user and sets valid JWT", async () => {
+        const testUser = new User({
+            email: "test@test.com",
+            username: "user",
+            password: "password",
+        });
+        await testUser.save();
+
+        const LOGIN_USER = `
+            mutation LoginUser($email: String!, $password: String!) {
+                loginUser(email: $email, password: $password) {
+                    _id
+                    email
+                    username
+                }
+            }
+        `;
+
+        const setHeaderFunction = vi.fn();
+
+        const response = await server.executeOperation(
+            {
+                query: LOGIN_USER,
+                variables: {
+                    email: "test@test.com",
+                    password: "password",
+                },
+            },
+            {
+                contextValue: {
+                    req: {},
+                    res: {
+                        setHeader: setHeaderFunction,
+                    },
+                },
+            }
+        );
+
+        expect(response.errors).toBeUndefined();
+        expect(setHeaderFunction).toHaveBeenCalledWith(
+            "Set-Cookie",
+            expect.stringContaining("token=")
+        );
+
+        const cookieHeader = setHeaderFunction.mock.calls[0][1];
+        const tokenMatch = cookieHeader.match(/token=([^;]+)/);
+        expect(tokenMatch).not.toBeNull();
+
+        const token = tokenMatch![1];
+        const decodedJWT = jwt.verify(token, process.env.JWT_SECRET!);
+        expect(decodedJWT).toMatchObject({
+            email: "test@test.com",
+            userId: testUser._id.toString(),
+        });
+    });
+
+    it("creates user and sets valid JWT", async () => {
+        const REGISTER_USER = `
+            mutation CreateUser($email: String!, $username: String!, $password: String!) {
+                createUser(email: $email, username: $username, password: $password) {
+                    _id
+                    email
+                    username
+                }
+            }
+        `;
+
+        const setHeaderFunction = vi.fn();
+
+        const response = await server.executeOperation(
+            {
+                query: REGISTER_USER,
+                variables: {
+                    email: "test@test.com",
+                    username: "user",
+                    password: "password",
+                },
+            },
+            {
+                contextValue: {
+                    req: {},
+                    res: {
+                        setHeader: setHeaderFunction,
+                    },
+                },
+            }
+        );
+
+        expect(response.errors).toBeUndefined();
+        expect(setHeaderFunction).toHaveBeenCalledWith(
+            "Set-Cookie",
+            expect.stringContaining("token=")
+        );
+
+        const cookieHeader = setHeaderFunction.mock.calls[0][1];
+        const tokenMatch = cookieHeader.match(/token=([^;]+)/);
+        expect(tokenMatch).not.toBeNull();
+
+        const token = tokenMatch![1];
+        const decodedJWT = jwt.verify(token, process.env.JWT_SECRET!);
+
+        expect(decodedJWT).toMatchObject({
+            email: "test@test.com",
+            userId: response.data?.createUser._id.toString(),
+        });
     });
 });

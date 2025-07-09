@@ -1,34 +1,26 @@
-import { ApolloServer } from "apollo-server-micro";
+import { ApolloServer } from "@apollo/server";
+import { startServerAndCreateNextHandler } from "@as-integrations/next";
 import { mergedTypeDefs } from "@/graphql/schema";
 import { resolvers } from "@/graphql/resolvers/resolvers";
 import dbConnect from "@/lib/db";
 import { NextApiRequest, NextApiResponse } from "next";
 
 // Create Apollo Server instance with schema and resolvers
-const apolloServer = new ApolloServer({
+const apolloServer = new ApolloServer<{
+    req: NextApiRequest;
+    res: NextApiResponse;
+}>({
     typeDefs: mergedTypeDefs,
     resolvers,
 });
 
-// Start Apollo Server (returns a promise)
-const startServer = apolloServer.start();
+export default startServerAndCreateNextHandler(apolloServer, {
+    context: async (req, res) => {
+        await dbConnect();
 
-export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse
-) {
-    await startServer; // Ensure server is started before handling requests
-    await dbConnect(); // Connect to MongoDB
-
-    // Delegate handling to Apollo Server's handler for the /api/graphql path
-    return apolloServer.createHandler({
-        path: "/api/graphql",
-    })(req, res);
-}
-
-// Disable Next.js body parser so Apollo can handle the request body
-export const config = {
-    api: {
-        bodyParser: false,
+        return {
+            req,
+            res,
+        };
     },
-};
+});
