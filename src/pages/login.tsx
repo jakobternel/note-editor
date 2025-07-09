@@ -13,9 +13,7 @@ import {
 const GET_USER_BY_EMAIL = gql`
     query GetUserByEmail($email: String!) {
         userByEmail(email: $email) {
-            _id
             email
-            username
         }
     }
 `;
@@ -60,7 +58,7 @@ export default function LoginPage() {
             const response = await getUser({ variables: { email } });
             const user = response.data?.userByEmail;
 
-            // Check to see if user with email exists and if passwords match
+            // Check to see if user with email exists
             if (!user) {
                 setLoginError("Invalid email or password");
                 setSubmissionLoading(false);
