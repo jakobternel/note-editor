@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import Navbar from "./layout/Navbar";
+import Header from "./layout/Header";
 
 /**
  * Layout component to be applied by default to all pages
@@ -14,7 +15,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                     <Navbar />
                 </div>
                 <div className="grow">
-                    <header>Header content</header>
+                    <Header />
                     <main>{children}</main>
                 </div>
             </div>
