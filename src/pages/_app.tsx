@@ -1,9 +1,13 @@
 import { ApolloProvider } from "@apollo/client";
 import client from "@/lib/apolloClient";
-import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 
+import "@/styles/globals.css";
 import { Sora, Inter, IBM_Plex_Mono } from "next/font/google";
+
+import Layout from "@/components/Layout";
+import { NextPage } from "next";
+import { ReactElement, ReactNode } from "react";
 
 // Import Sora font from https://fonts.google.com/specimen/Sora
 const heading = Sora({
@@ -27,13 +31,27 @@ const code = IBM_Plex_Mono({
     weight: ["100", "200", "300", "400", "500", "600", "700"],
 });
 
-export default function App({ Component, pageProps }: AppProps) {
+// Extend NextPage to include optional getLayout
+export type NextPageWithLayout = NextPage & {
+    getLayout?: (page: ReactElement) => ReactNode;
+};
+
+// Extend AppProps to include new optional layout
+type AppPropsWithLayout = AppProps & {
+    Component: NextPageWithLayout;
+};
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
+    // Apply component's getLayout function, otherwise apply default Layout
+    const getLayout =
+        Component.getLayout ?? ((page) => <Layout>{page}</Layout>);
+
     return (
         <ApolloProvider client={client}>
             <main
                 className={`${heading.variable} ${main.variable} ${code.variable}`}
             >
-                <Component {...pageProps} />
+                {getLayout(<Component {...pageProps} />)}
             </main>
         </ApolloProvider>
     );

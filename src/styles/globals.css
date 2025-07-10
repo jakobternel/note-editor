@@ -20,7 +20,7 @@
     /* Apply background to all pages */
     html,
     body {
-        @apply m-0 h-full w-full bg-background p-0 transition-all;
+        @apply m-0 h-full w-full overflow-hidden overscroll-none bg-background p-0 transition-all;
     }
 
     /* Specify heading tags to use Sora font */
@@ -72,6 +72,7 @@
     --color-accent: #f3e8fb;
     --color-text-primary: #1f1331;
     --color-text-secondary: #6b7280;
+    --color-text-inverse: #f9f5fc;
     --color-border: #e5e7eb;
 
     /* Form input theme */
@@ -96,6 +97,7 @@
     --color-accent: #3b1c4d;
     --color-text-primary: #f4f1fa;
     --color-text-secondary: #bdafd4;
+    --color-text-inverse: #f4f1fa;
     --color-border: #3a324a;
 
     /* Form input theme */
