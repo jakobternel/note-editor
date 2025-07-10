@@ -26,7 +26,7 @@ export default function Navbar() {
                     Notilo
                 </p>
             </div>
-            <div className="flex h-full flex-col gap-1 p-3">
+            <div className="flex grow flex-col gap-1 p-3">
                 <NavElement navElementName="New Note" icon={PlusSquareIcon} />
                 <NavElement
                     navElementName="Dashboard"
