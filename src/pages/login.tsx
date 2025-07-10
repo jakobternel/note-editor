@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { useRouter } from "next/router";
 import { ApolloError, gql, useLazyQuery, useMutation } from "@apollo/client";
 
@@ -179,3 +179,8 @@ export default function LoginPage() {
         </>
     );
 }
+
+// Do not apply default layout on login page
+LoginPage.getLayout = function getLayout(page: ReactElement) {
+    return page;
+};

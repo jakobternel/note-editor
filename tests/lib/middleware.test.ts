@@ -14,7 +14,7 @@ function createJWTToken(
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
         .setExpirationTime("1h")
-        .sign(incorrectJWT ? incorrectJWT : JWT_SECRET);
+        .sign(incorrectJWT ?? JWT_SECRET);
 }
 
 function simulateRequest(path: string, token?: string): NextRequest {

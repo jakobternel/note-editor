@@ -19,6 +19,7 @@ module.exports = {
                 accent: "var(--color-accent)",
                 textPrimary: "var(--color-text-primary)",
                 textSecondary: "var(--color-text-secondary)",
+                textInverse: "var(--color-text-inverse)",
                 border: "var(--color-border)",
 
                 // Form inputs

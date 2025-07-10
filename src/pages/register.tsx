@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { ApolloError, gql, useMutation } from "@apollo/client";
 
 import {
@@ -156,3 +156,8 @@ export default function RegisterPage() {
         </>
     );
 }
+
+// Do not apply default layout on register page
+RegisterPage.getLayout = function getLayout(page: ReactElement) {
+    return page;
+};
