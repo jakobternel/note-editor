@@ -31,15 +31,15 @@ export default function UserDropdown() {
             <p className="text-xs text-textSecondary">@user20</p>
             <hr className="bg-border" />
             <div className="flex flex-col gap-1">
-                <div className="flex cursor-pointer items-center gap-2 rounded-md bg-opacity-25 p-2 transition-all hover:bg-accent">
+                <div className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-all hover:bg-accent">
                     <UserIcon size={16} weight="bold" />
                     <p className="text-sm">Profile</p>
                 </div>
-                <div className="flex cursor-pointer items-center gap-2 rounded-md bg-opacity-25 p-2 transition-all hover:bg-accent">
+                <div className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-all hover:bg-accent">
                     <GearSixIcon size={16} weight="bold" />
                     <p className="text-sm">Settings</p>
                 </div>
-                <div className="flex cursor-pointer items-center gap-2 rounded-md bg-opacity-25 p-2 transition-all hover:bg-accent">
+                <div className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-all hover:bg-accent">
                     <BugIcon size={16} weight="bold" />
                     <p className="text-sm">Report a Bug</p>
                 </div>
