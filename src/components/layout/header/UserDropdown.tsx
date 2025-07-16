@@ -9,7 +9,9 @@ import {
     UserIcon,
 } from "@phosphor-icons/react";
 import Dialog from "../Dialog";
+import { useToastElementStore } from "@/zustand/toastStore";
 
+// GQL query to handle logout and cookie modification
 const LOGOUT = gql`
     mutation Logout {
         logoutUser
@@ -20,12 +22,24 @@ const LOGOUT = gql`
  * UserDropdown component to be used in UserButton component
  */
 export default function UserDropdown() {
+    const createToast = useToastElementStore(
+        (state) => state.createToastElement
+    );
+
     const [dialogActive, setDialogActive] = useState<boolean>(false);
     const [logout] = useMutation(LOGOUT);
 
     const handleLogout = async () => {
-        await logout();
-        router.push("/");
+        try {
+            await logout();
+            router.push("/");
+        } catch {
+            setDialogActive(false);
+            createToast(
+                "error",
+                "There was a problem logging you out. Please try again."
+            );
+        }
     };
 
     return (
