@@ -119,11 +119,13 @@ export const resolvers = {
             return user;
         },
 
+        // Handle logout of user
         logoutUser: async (
             _: unknown,
             __: unknown,
             context: { res: NextApiResponse }
         ) => {
+            // Expire cookie when GQL query called
             context.res.setHeader(
                 "Set-Cookie",
                 serialize("token", "", {

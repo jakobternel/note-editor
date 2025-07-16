@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import Navbar from "./layout/Navbar";
 import Header from "./layout/Header";
+import Toast from "./layout/Toast";
 
 /**
  * Layout component to be applied by default to all pages
@@ -10,6 +11,7 @@ import Header from "./layout/Header";
 export default function Layout({ children }: { children: ReactNode }) {
     return (
         <div className="h-screen w-screen overflow-hidden">
+            <Toast />
             <div className="flex size-full">
                 <div>
                     <Navbar />
