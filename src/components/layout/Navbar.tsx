@@ -27,20 +27,30 @@ export default function Navbar() {
                 </p>
             </div>
             <div className="flex grow flex-col gap-1 p-3">
-                <NavElement navElementName="New Note" icon={PlusSquareIcon} />
+                <NavElement
+                    navElementName="New Note"
+                    icon={PlusSquareIcon}
+                    path="/new"
+                />
                 <NavElement
                     navElementName="Dashboard"
-                    active={true}
                     icon={SquaresFourIcon}
+                    path="/"
                 />
-                <NavElement navElementName="Notes List" icon={ListDashesIcon} />
+                <NavElement
+                    navElementName="Notes List"
+                    icon={ListDashesIcon}
+                    path="/list"
+                />
                 <NavElement
                     navElementName="Favourites"
                     icon={BookmarksSimpleIcon}
+                    path="/favourites"
                 />
                 <NavElement
                     navElementName="Recently Deleted"
                     icon={TrashIcon}
+                    path="/deleted"
                 />
                 <hr className="my-2" />
                 <FileElement noteName="Test Note 1" />

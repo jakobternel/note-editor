@@ -10,15 +10,17 @@ import Toast from "./layout/Toast";
  */
 export default function Layout({ children }: { children: ReactNode }) {
     return (
-        <div className="h-screen w-screen overflow-hidden">
+        <div className="h-screen w-screen">
             <Toast />
             <div className="flex size-full">
                 <div>
                     <Navbar />
                 </div>
-                <div className="grow">
-                    <Header />
-                    <main>{children}</main>
+                <div className="flex grow flex-col">
+                    <div className="shrink-0">
+                        <Header />
+                    </div>
+                    <main className="grow !overflow-auto">{children}</main>
                 </div>
             </div>
         </div>
