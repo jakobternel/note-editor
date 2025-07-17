@@ -1,4 +1,4 @@
-import router from "next/router";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 
@@ -30,6 +30,8 @@ export default function UserDropdown() {
 
     const [dialogActive, setDialogActive] = useState<boolean>(false);
     const [logout] = useMutation(LOGOUT);
+
+    const router = useRouter();
 
     const handleLogout = async () => {
         try {
@@ -74,11 +76,17 @@ export default function UserDropdown() {
             <p className="text-xs text-textSecondary">@{user?.username}</p>
             <hr className="bg-border" />
             <div className="flex flex-col gap-1">
-                <div className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-all hover:bg-accent">
+                <div
+                    className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-all hover:bg-accent"
+                    onClick={() => router.push("/profile")}
+                >
                     <UserIcon size={16} weight="bold" />
                     <p className="text-sm">Profile</p>
                 </div>
-                <div className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-all hover:bg-accent">
+                <div
+                    className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-all hover:bg-accent"
+                    onClick={() => router.push("/settings")}
+                >
                     <GearSixIcon size={16} weight="bold" />
                     <p className="text-sm">Settings</p>
                 </div>
