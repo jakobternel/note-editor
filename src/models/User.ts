@@ -11,12 +11,14 @@ export interface IUser {
     email: string;
     username: string;
     password: string;
+    name?: string;
 }
 
 const UserSchema = new Schema<IUser>({
     email: { type: String, required: true, unique: true },
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    name: { type: String, required: false },
 });
 
 // Hash passwords before adding new document when save call run on UserSchema

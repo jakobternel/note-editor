@@ -1,13 +1,13 @@
 import { ApolloProvider } from "@apollo/client";
 import client from "@/lib/apolloClient";
 import type { AppProps } from "next/app";
+import { NextPage } from "next";
+import { ReactElement, ReactNode } from "react";
 
 import "@/styles/globals.css";
 import { Sora, Inter, IBM_Plex_Mono } from "next/font/google";
 
 import Layout from "@/components/Layout";
-import { NextPage } from "next";
-import { ReactElement, ReactNode } from "react";
 
 // Import Sora font from https://fonts.google.com/specimen/Sora
 const heading = Sora({

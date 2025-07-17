@@ -1,16 +1,20 @@
 import { useState } from "react";
 import UserDropdown from "./UserDropdown";
 
+import { useUserStore } from "@/zustand/userStore";
+
 /**
  * UserButton component to be used in Header component
  */
 export default function UserButton() {
+    const user = useUserStore((state) => state.user);
+
     const [isHovered, setIsHovered] = useState<boolean>(false);
 
     return (
         <div className="relative flex items-center gap-5">
             <div>
-                <p className="text-sm text-textSecondary">test-1234</p>
+                <p className="text-sm text-textSecondary">{user?.name}</p>
             </div>
             <div
                 className="relative flex size-8 cursor-pointer items-center justify-center rounded-full border border-green-400 bg-green-200"
