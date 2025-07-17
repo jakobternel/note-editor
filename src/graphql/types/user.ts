@@ -5,6 +5,7 @@ export const userTypeDefs = gql`
         _id: ID!
         email: String!
         username: String!
+        name: String
     }
 
     extend type Query {

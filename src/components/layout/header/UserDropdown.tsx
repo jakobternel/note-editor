@@ -10,6 +10,7 @@ import {
 } from "@phosphor-icons/react";
 import Dialog from "../Dialog";
 import { useToastElementStore } from "@/zustand/toastStore";
+import { useUserStore } from "@/zustand/userStore";
 
 // GQL query to handle logout and cookie modification
 const LOGOUT = gql`
@@ -25,6 +26,7 @@ export default function UserDropdown() {
     const createToast = useToastElementStore(
         (state) => state.createToastElement
     );
+    const user = useUserStore((state) => state.user);
 
     const [dialogActive, setDialogActive] = useState<boolean>(false);
     const [logout] = useMutation(LOGOUT);
@@ -69,7 +71,7 @@ export default function UserDropdown() {
                     onClose={() => setDialogActive(false)}
                 />
             )}
-            <p className="text-xs text-textSecondary">@user20</p>
+            <p className="text-xs text-textSecondary">@{user?.username}</p>
             <hr className="bg-border" />
             <div className="flex flex-col gap-1">
                 <div className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-all hover:bg-accent">
