@@ -2,12 +2,13 @@ import { ApolloProvider } from "@apollo/client";
 import client from "@/lib/apolloClient";
 import type { AppProps } from "next/app";
 import { NextPage } from "next";
-import { ReactElement, ReactNode } from "react";
+import { ReactElement, ReactNode, useEffect } from "react";
 
 import "@/styles/globals.css";
 import { Sora, Inter, IBM_Plex_Mono } from "next/font/google";
 
 import Layout from "@/components/Layout";
+import { useThemeStore } from "@/zustand/theme";
 
 // Import Sora font from https://fonts.google.com/specimen/Sora
 const heading = Sora({
@@ -45,6 +46,16 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     // Apply component's getLayout function, otherwise apply default Layout
     const getLayout =
         Component.getLayout ?? ((page) => <Layout>{page}</Layout>);
+
+    const darkMode = useThemeStore((state) => state.darkMode); // Get theme from zustand store
+
+    // Set data-theme on theme change to allow css styles to be applied
+    useEffect(() => {
+        document.documentElement.setAttribute(
+            "data-theme",
+            darkMode ? "dark" : ""
+        );
+    }, [darkMode]);
 
     return (
         <ApolloProvider client={client}>

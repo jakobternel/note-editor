@@ -79,7 +79,7 @@ export const resolvers = {
             }
 
             // Return user
-            return user;
+            return user.toObject();
         },
 
         // Handle login of user
@@ -116,7 +116,7 @@ export const resolvers = {
             }
 
             // Return user details
-            return user;
+            return user.toObject();
         },
 
         // Handle logout of user

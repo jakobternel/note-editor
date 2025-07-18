@@ -11,6 +11,7 @@ import {
 import Dialog from "../Dialog";
 import { useToastElementStore } from "@/zustand/toastStore";
 import { useUserStore } from "@/zustand/userStore";
+import { useThemeStore } from "@/zustand/theme";
 
 // GQL query to handle logout and cookie modification
 const LOGOUT = gql`
@@ -26,7 +27,9 @@ export default function UserDropdown() {
     const createToast = useToastElementStore(
         (state) => state.createToastElement
     );
-    const user = useUserStore((state) => state.user);
+    const user = useUserStore((state) => state.user); // Get current user data from zustand state
+    const darkMode = useThemeStore((state) => state.darkMode); // Get current theme from zustand state
+    const toggleTheme = useThemeStore((state) => state.toggleTheme); // Zustand function to toggle theme
 
     const [dialogActive, setDialogActive] = useState<boolean>(false);
     const [logout] = useMutation(LOGOUT);
@@ -74,6 +77,17 @@ export default function UserDropdown() {
                 />
             )}
             <p className="text-xs text-textSecondary">@{user?.username}</p>
+            <div className="flex items-center justify-between">
+                <p className="text-xs">Dark Mode</p>
+                <div
+                    className={`relative h-4 w-8 cursor-pointer rounded-full transition-all duration-500 ${darkMode ? "bg-primary" : "bg-border"}`}
+                    onClick={toggleTheme}
+                >
+                    <div
+                        className={`absolute top-[2px] size-3 rounded-full transition-all duration-500 ${darkMode ? "left-[18px] bg-white" : "left-[2px] bg-primary"}`}
+                    ></div>
+                </div>
+            </div>
             <hr className="bg-border" />
             <div className="flex flex-col gap-1">
                 <div
@@ -96,7 +110,7 @@ export default function UserDropdown() {
                 </div>
             </div>
             <div
-                className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-red-500 p-2 transition-all hover:bg-red-100"
+                className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-red-500 p-2 transition-all hover:bg-red-500/10"
                 onClick={() => setDialogActive(true)}
             >
                 <p className="text-xs font-semibold">Sign Out</p>

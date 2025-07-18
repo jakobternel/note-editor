@@ -20,7 +20,7 @@
     /* Apply background to all pages */
     html,
     body {
-        @apply m-0 h-full w-full overflow-hidden overscroll-none bg-background p-0 transition-all;
+        @apply m-0 h-full w-full overflow-hidden overscroll-none bg-background p-0;
     }
 
     /* Specify heading tags to use Sora font */
@@ -72,7 +72,7 @@
     --color-accent: #f3e8fb;
     --color-text-primary: #1f1331;
     --color-text-secondary: #6b7280;
-    --color-text-inverse: #f9f5fc;
+    --color-text-inverse: #f4f1fa;
     --color-border: #e5e7eb;
 
     /* Form input theme */
@@ -91,13 +91,13 @@
 
 /* Dark theme colours */
 [data-theme="dark"] {
-    --color-primary: #d6a4e8;
+    --color-primary: #ab83ba;
     --color-background: #140d1c;
     --color-surface: #1f1530;
     --color-accent: #3b1c4d;
     --color-text-primary: #f4f1fa;
     --color-text-secondary: #bdafd4;
-    --color-text-inverse: #f4f1fa;
+    --color-text-inverse: #1f1331;
     --color-border: #3a324a;
 
     /* Form input theme */
@@ -105,11 +105,11 @@
     --color-input-border: #3a324a;
     --color-input-text: #f4f1fa;
     --color-input-placeholder: #8377a2;
-    --color-input-focus: #d6a4e8;
+    --color-input-focus: #ab83ba;
     --color-input-glow: rgba(214, 164, 232, 0.2);
 
     /* Button theme */
-    --color-button-bg: #c48be4;
-    --color-button-hover: #d6a4e8;
+    --color-button-bg: #9d6fb6;
+    --color-button-hover: #ab83ba;
     --color-button-text: #140d1c;
 }

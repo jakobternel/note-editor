@@ -21,7 +21,7 @@ export default function UserButton() {
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                <p className="text-xs font-semibold">TE</p>
+                <p className="text-xs font-semibold text-black">TE</p>
                 {/* Only display userDropdown if user image is hovered */}
                 {isHovered && (
                     <div className="absolute right-0 top-7 cursor-default pt-3">
