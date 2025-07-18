@@ -1,5 +1,6 @@
 import User from "@/models/User";
 import bcrypt from "bcrypt";
+import { serialize } from "cookie";
 import jwt from "jsonwebtoken";
 import { NextApiResponse } from "next";
 
@@ -78,7 +79,7 @@ export const resolvers = {
             }
 
             // Return user
-            return user;
+            return user.toObject();
         },
 
         // Handle login of user
@@ -115,7 +116,27 @@ export const resolvers = {
             }
 
             // Return user details
-            return user;
+            return user.toObject();
+        },
+
+        // Handle logout of user
+        logoutUser: async (
+            _: unknown,
+            __: unknown,
+            context: { res: NextApiResponse }
+        ) => {
+            // Expire cookie when GQL query called
+            context.res.setHeader(
+                "Set-Cookie",
+                serialize("token", "", {
+                    httpOnly: true,
+                    path: "/",
+                    sameSite: "lax",
+                    expires: new Date(0),
+                })
+            );
+
+            return true;
         },
     },
 };

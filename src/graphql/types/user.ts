@@ -5,6 +5,7 @@ export const userTypeDefs = gql`
         _id: ID!
         email: String!
         username: String!
+        name: String
     }
 
     extend type Query {
@@ -17,5 +18,6 @@ export const userTypeDefs = gql`
     extend type Mutation {
         createUser(email: String!, username: String!, password: String!): User
         loginUser(email: String!, password: String!): User
+        logoutUser: Boolean
     }
 `;

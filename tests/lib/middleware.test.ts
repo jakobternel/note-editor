@@ -14,7 +14,24 @@ function createJWTToken(
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
         .setExpirationTime("1h")
-        .sign(incorrectJWT ? incorrectJWT : JWT_SECRET);
+        .sign(incorrectJWT ?? JWT_SECRET);
+}
+
+async function createValidJWTToken() {
+    return await createJWTToken({
+        userId: "user",
+        email: "test@test.com",
+    });
+}
+
+async function createInvalidJWTToken() {
+    return await createJWTToken(
+        {
+            userId: "user",
+            email: "test@test.com",
+        },
+        new TextEncoder().encode("wrongsecret")
+    );
 }
 
 function simulateRequest(path: string, token?: string): NextRequest {
@@ -50,10 +67,8 @@ describe("middleware auth logic", () => {
     });
 
     it("allows authenticated user to access /", async () => {
-        const token = await createJWTToken({
-            userId: "user",
-            email: "test@test.com",
-        });
+        const token = await createValidJWTToken();
+
         const req = simulateRequest("/", token);
         const res = await middleware(req);
 
@@ -62,10 +77,8 @@ describe("middleware auth logic", () => {
     });
 
     it("redirects logged-in user from /login", async () => {
-        const token = await createJWTToken({
-            userId: "user",
-            email: "test@test.com",
-        });
+        const token = await createValidJWTToken();
+
         const req = simulateRequest("/login", token);
         const res = await middleware(req);
 
@@ -82,10 +95,8 @@ describe("middleware auth logic", () => {
     });
 
     it("redirects logged-in user from /register", async () => {
-        const token = await createJWTToken({
-            userId: "user",
-            email: "test@test.com",
-        });
+        const token = await createValidJWTToken();
+
         const req = simulateRequest("/register", token);
         const res = await middleware(req);
 
@@ -102,13 +113,7 @@ describe("middleware auth logic", () => {
     });
 
     it("redirects user from / with invalid token", async () => {
-        const incorrectToken = await createJWTToken(
-            {
-                userId: "user",
-                email: "test@test.com",
-            },
-            new TextEncoder().encode("wrongsecret")
-        );
+        const incorrectToken = await createInvalidJWTToken();
 
         const req = simulateRequest("/", incorrectToken);
         const res = await middleware(req);
@@ -118,13 +123,7 @@ describe("middleware auth logic", () => {
     });
 
     it("allows user with invalid token to access /login", async () => {
-        const incorrectToken = await createJWTToken(
-            {
-                userId: "user",
-                email: "test@test.com",
-            },
-            new TextEncoder().encode("wrongsecret")
-        );
+        const incorrectToken = await createInvalidJWTToken();
 
         const req = simulateRequest("/login", incorrectToken);
         const res = await middleware(req);
@@ -134,13 +133,7 @@ describe("middleware auth logic", () => {
     });
 
     it("allows user with invalid token to access /register", async () => {
-        const incorrectToken = await createJWTToken(
-            {
-                userId: "user",
-                email: "test@test.com",
-            },
-            new TextEncoder().encode("wrongsecret")
-        );
+        const incorrectToken = await createInvalidJWTToken();
 
         const req = simulateRequest("/register", incorrectToken);
         const res = await middleware(req);

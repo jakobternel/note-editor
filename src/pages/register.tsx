@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { ApolloError, gql, useMutation } from "@apollo/client";
 
 import {
@@ -8,6 +8,7 @@ import {
     InfoIcon,
     LockKeyIcon,
 } from "@phosphor-icons/react";
+import { useUserStore } from "@/zustand/userStore";
 
 // GQL query to add user account
 const ADD_USER = gql`
@@ -20,6 +21,7 @@ const ADD_USER = gql`
             _id
             email
             username
+            name
         }
     }
 `;
@@ -29,6 +31,8 @@ export default function RegisterPage() {
     const [submissionLoading, setSubmissionLoading] = useState<boolean>(false); // Loading state to disable button and show loading effect
     const router = useRouter();
     const [addUser] = useMutation(ADD_USER);
+
+    const addUserDetails = useUserStore((user) => user.addUserDetails);
 
     // Logic for handling registration form submission
     const handleSubmit = async (e: React.FormEvent) => {
@@ -42,13 +46,23 @@ export default function RegisterPage() {
             const email = form.get("email") as string;
             const password = form.get("password") as string;
 
-            await addUser({
+            const request = await addUser({
                 variables: {
                     email,
                     password,
                     username: `${email.split("@")[0]}-${Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000}`, // Generate username in format user-1234. user comes from email address e.g., user@test.com
                 },
             });
+
+            const userData = request.data.createUser;
+
+            // Set user state in zustand
+            addUserDetails(
+                userData._id,
+                userData.username,
+                userData.email,
+                userData.name
+            );
 
             // Redirect on successful registration
             router.push("/");
@@ -156,3 +170,8 @@ export default function RegisterPage() {
         </>
     );
 }
+
+// Do not apply default layout on register page
+RegisterPage.getLayout = function getLayout(page: ReactElement) {
+    return page;
+};

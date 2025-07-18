@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { useRouter } from "next/router";
 import { ApolloError, gql, useLazyQuery, useMutation } from "@apollo/client";
 
@@ -8,6 +8,7 @@ import {
     LockKeyIcon,
     InfoIcon,
 } from "@phosphor-icons/react";
+import { useUserStore } from "@/zustand/userStore";
 
 // GQL query to check user account
 const GET_USER_BY_EMAIL = gql`
@@ -25,6 +26,7 @@ const LOGIN_USER = gql`
             _id
             email
             username
+            name
         }
     }
 `;
@@ -35,6 +37,8 @@ export default function LoginPage() {
     const router = useRouter();
     const [getUser] = useLazyQuery(GET_USER_BY_EMAIL);
     const [loginUser] = useMutation(LOGIN_USER);
+
+    const addUserDetails = useUserStore((user) => user.addUserDetails);
 
     // Logic for handling login form submission
     const handleSubmit = async (e: React.FormEvent) => {
@@ -66,12 +70,21 @@ export default function LoginPage() {
             }
 
             // Attempt login
-            await loginUser({
+            const request = await loginUser({
                 variables: {
                     email,
                     password,
                 },
             });
+            const userData = request.data.loginUser;
+
+            // Set user state in zustand
+            addUserDetails(
+                userData._id,
+                userData.username,
+                userData.email,
+                userData.name
+            );
 
             // Redirect user on login
             router.push("/");
@@ -179,3 +192,8 @@ export default function LoginPage() {
         </>
     );
 }
+
+// Do not apply default layout on login page
+LoginPage.getLayout = function getLayout(page: ReactElement) {
+    return page;
+};
