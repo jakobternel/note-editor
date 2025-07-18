@@ -32,7 +32,7 @@ export default function SearchBar() {
                 ref={inputRef}
                 type="text"
                 placeholder="Search by Keyword"
-                className="w-64 rounded-lg border border-border px-8 py-2 font-main text-xs focus:border-formInputFocus focus:outline-none"
+                className="w-64 rounded-lg border border-border bg-formInputBackground px-8 py-2 font-main text-xs focus:border-formInputFocus focus:outline-none"
             />
             <MagnifyingGlassIcon
                 size={16}

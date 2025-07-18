@@ -41,5 +41,6 @@ export async function middleware(req: NextRequest) {
 
 // Matcher to apply middleware to all routes
 export const config = {
-    matcher: "/:path*",
+    matcher:
+        "/((?!api|_next/static|_next/image|icon_black.png|icon_white.png|.*\\..*).*)",
 };
