@@ -2,7 +2,7 @@ import Head from "next/head";
 
 import Note from "@/components/Note";
 
-export default function New() {
+export default function NotePage() {
     return (
         <>
             <Head>

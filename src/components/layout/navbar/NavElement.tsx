@@ -1,7 +1,7 @@
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
 
-import { IconProps } from "@phosphor-icons/react";
+import { IconProps, SpinnerGapIcon } from "@phosphor-icons/react";
 
 /**
  * NavElement component to be rendered on Navbar
@@ -14,10 +14,14 @@ export default function FileElement({
     navElementName,
     icon: Icon,
     path,
+    isLoading,
+    clickAction,
 }: {
     navElementName: string;
     icon: React.ComponentType<IconProps>;
-    path: string;
+    isLoading?: boolean;
+    path?: string;
+    clickAction?: () => void;
 }) {
     const router = useRouter();
     const active = usePathname() === path;
@@ -25,13 +29,29 @@ export default function FileElement({
     return (
         <div
             className={`flex w-full cursor-pointer items-center gap-2 rounded-lg p-2 transition-all ${active ? "bg-primary hover:bg-buttonHover" : "hover:bg-accent"}`}
-            onClick={() => router.push(path)}
+            onClick={() => {
+                if (clickAction) {
+                    clickAction();
+                }
+
+                if (path) {
+                    router.push(path);
+                }
+            }}
         >
-            <Icon
-                size={20}
-                weight="bold"
-                className={`${active ? "text-textInverse" : ""}`}
-            />
+            {isLoading ? (
+                <SpinnerGapIcon
+                    size={20}
+                    weight="bold"
+                    className="animate-spin"
+                />
+            ) : (
+                <Icon
+                    size={20}
+                    weight="bold"
+                    className={`${active ? "text-textInverse" : ""}`}
+                />
+            )}
             <p className={`text-sm ${active ? "text-textInverse" : ""}`}>
                 {navElementName}
             </p>
