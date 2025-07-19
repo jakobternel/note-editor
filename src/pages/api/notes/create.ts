@@ -11,7 +11,7 @@ export default async function handler(
     if (req.method !== "POST") return res.status(405).end("Method not allowed");
 
     const noteId = uuidv4(); // Generate random UUID for file name/ID
-    const fileRoute = `notes/test-user/${noteId}.md`; // File route for the generated MD file
+    const fileRoute = `notes/${req.body.user}/${noteId}.md`; // File route for the generated MD file
 
     // Set parameters for S3 file
     const createParams = {
