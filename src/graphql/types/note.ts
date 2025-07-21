@@ -8,6 +8,7 @@ export const noteTypeDefs = gql`
         createdDate: String!
         lastEditedDate: String!
         tags: [String]
+        noteTitle: String
     }
 
     extend type Query {
@@ -23,5 +24,6 @@ export const noteTypeDefs = gql`
             createdDate: String!
             lastEditedDate: String!
         ): Note
+        editTitle(noteId: String!, noteTitle: String): Note
     }
 `;

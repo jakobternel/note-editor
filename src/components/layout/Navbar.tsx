@@ -40,22 +40,6 @@ const ADD_NOTE = gql`
     }
 `;
 
-// Get current formatted date. Returns date in day month year and hours:min format. E.g., 19 July 2025, 21:55 PM
-const getDate = (): string => {
-    const date = new Date();
-
-    const day = date.getDate();
-    const month = date.toLocaleString("en-GB", { month: "long" });
-    const year = date.getFullYear();
-
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-
-    const timeModifier = Number(hours) < 12 ? "AM" : "PM";
-
-    return `${day} ${month} ${year}, ${hours}:${minutes} ${timeModifier}`;
-};
-
 /**
  * Navbar component to be used in Layout component
  */
@@ -115,12 +99,14 @@ export default function Navbar() {
                                         noteId: data.noteId,
                                         ownerId: user.id,
                                         ownerUsername: user.username,
-                                        createdDate: getDate(),
-                                        lastEditedDate: getDate(),
+                                        createdDate: new Date().toISOString(),
+                                        lastEditedDate:
+                                            new Date().toISOString(),
                                     },
                                 });
 
                                 // Show success toast and navigate to new page
+                                setIsLoading(false);
                                 createToast(
                                     "success",
                                     "Created new note successfully."

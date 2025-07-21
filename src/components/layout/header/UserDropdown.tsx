@@ -11,7 +11,7 @@ import {
 import Dialog from "../Dialog";
 import { useToastElementStore } from "@/zustand/toastStore";
 import { useUserStore } from "@/zustand/userStore";
-import { useThemeStore } from "@/zustand/theme";
+import { useThemeStore } from "@/zustand/themeStore";
 
 // GQL query to handle logout and cookie modification
 const LOGOUT = gql`
