@@ -8,10 +8,18 @@ export const noteResolvers = {
 
         // Get details of specific note by noteId
         noteById: async (_: unknown, { noteId }: { noteId: string }) => {
-            await Note.findOne({ noteId });
+            const note = await Note.findOne({ noteId });
+
+            // Throw error if no note found
+            if (!note) {
+                throw new Error("Note not found");
+            }
+
+            return note;
         },
     },
     Mutation: {
+        // Add note to database
         createNote: async (
             _: unknown,
             {
@@ -39,6 +47,24 @@ export const noteResolvers = {
             await note.save();
 
             return note.toObject();
+        },
+
+        // Query to update note title
+        editTitle: async (
+            _: unknown,
+            { noteId, noteTitle }: { noteId: string; noteTitle: string }
+        ) => {
+            try {
+                const updatedNote = await Note.findOneAndUpdate(
+                    { noteId },
+                    { noteTitle, lastEditedDate: new Date().toISOString() },
+                    { new: true }
+                );
+
+                return updatedNote.toObject();
+            } catch {
+                throw new Error("Error editing title");
+            }
         },
     },
 };

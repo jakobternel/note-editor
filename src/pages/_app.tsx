@@ -8,7 +8,7 @@ import "@/styles/globals.css";
 import { Sora, Inter, IBM_Plex_Mono } from "next/font/google";
 
 import Layout from "@/components/Layout";
-import { useThemeStore } from "@/zustand/theme";
+import { useThemeStore } from "@/zustand/themeStore";
 
 // Import Sora font from https://fonts.google.com/specimen/Sora
 const heading = Sora({
